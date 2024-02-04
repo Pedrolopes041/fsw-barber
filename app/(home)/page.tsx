@@ -1,11 +1,12 @@
 import { format } from "date-fns";
 import Header from "../_components/header";
 import { ptBR } from "date-fns/locale";
+import Search from "./_components/search";
 
 export default function Home() {
   return (
     <div>
-      <Header/>
+      <Header />
       <div className="px-5 pt-5">
         <h1 className="font-bold text-xl">Olá, Miguel</h1>
         <p className="capitalize text-sm">
@@ -14,6 +15,10 @@ export default function Home() {
           })}
         </p>
       </div>
+
+      <div className="px-5 mt-6">
+        <Search />
+      </div>
     </div>
-  )
+  );
 }
