@@ -26,7 +26,7 @@ const BarbershopDetailsPage = async ({ params }: barbershopDetails) => {
 
       <div className="px-5 flex flex-col gap-4 py-6">
         {barbershop?.services.map((services) => (
-          <ServiceItem key={services.id} service={services} IsAuthenticated={!!session?.user}/>
+          <ServiceItem key={services.id} service={services} barbeshop={barbershop} isAuthenticated={!!session?.user}/>
         ))}
       </div>
     </div>
