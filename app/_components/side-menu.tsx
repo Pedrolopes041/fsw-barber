@@ -1,6 +1,6 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import { SheetHeader, SheetTitle } from "./ui/sheet";
-import { Avatar, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import {
   CalendarIcon,
@@ -27,10 +27,11 @@ const SideMenu = () => {
 
       {status === "authenticated" && (
         <div>
-          <div className="flex items-center justify-around mt-4">
-            <div className="flex flex-row items-center gap-3 p-3">
+          <div className="flex items-center justify-around mt-4 p-3">
+            <div className="flex flex-row items-center gap-3">
               <Avatar>
                 <AvatarImage src={data.user?.image ?? ""} />
+                <AvatarFallback>A</AvatarFallback>
               </Avatar>
               <h1>{data.user?.name}</h1>
             </div>
