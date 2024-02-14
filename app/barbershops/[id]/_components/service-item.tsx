@@ -11,6 +11,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/app/_components/ui/sheet";
+import { toast } from "sonner";
+
 import { Barbershop, Service } from "@prisma/client";
 import { ptBR } from "date-fns/locale";
 import { signIn, useSession } from "next-auth/react";
@@ -20,6 +22,7 @@ import { addDays, format, setHours, setMinutes } from "date-fns";
 import { generateDayTimeList } from "../_helpers/hours";
 import { saveBooking } from "../_actions/save-booking";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface ServiceItemProps {
   service: Service;
@@ -33,10 +36,11 @@ const ServiceItem = ({
   barbeshop,
 }: ServiceItemProps) => {
   const { data } = useSession();
-
+  const router = useRouter()
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [hour, setHour] = useState<string | undefined>();
   const [loading, setIsLoading] = useState(false);
+  const [sheetopen, setSheetOpen] = useState(false);
 
   //para quando eu desmarcar uma data o horario sumir
   const handleDateClick = (date: Date | undefined) => {
@@ -57,7 +61,7 @@ const ServiceItem = ({
   };
 
   const handleBookingSubmit = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       if (!hour || !date || !data?.user) {
         return;
@@ -76,10 +80,20 @@ const ServiceItem = ({
         date: newDate,
         userId: (data.user as any).id,
       });
+      setDate(undefined)
+      setHour(undefined)
+      toast("Reserva realizada com sucesso!", {
+        description: format(newDate, " 'Para' dd 'de' MMM 'às' HH':'mm "),
+        action: {
+          label: "Visualizar",
+          onClick: () => router.push("/booking"),
+        },
+      })
+      setSheetOpen(false);
     } catch (error) {
       console.error(error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   };
 
@@ -113,7 +127,7 @@ const ServiceItem = ({
                   currency: "BRL",
                 }).format(Number(service.price))}
               </p>
-              <Sheet>
+              <Sheet open={sheetopen} onOpenChange={setSheetOpen}>
                 <SheetTrigger asChild>
                   <Button variant="secondary" onClick={handleBookingClick}>
                     Reservar
@@ -124,7 +138,6 @@ const ServiceItem = ({
                   <SheetHeader className="text-left px-5 py-6 border-b border-solid border-secondary">
                     <SheetTitle>Fazer Reserva</SheetTitle>
                   </SheetHeader>
-
                   <div className="py-6">
                     <Calendar
                       mode="single"
@@ -220,7 +233,6 @@ const ServiceItem = ({
                       {loading && (
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       )}
-                      
                       Confirmar Reserva
                     </Button>
                   </SheetFooter>
