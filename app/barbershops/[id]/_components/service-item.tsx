@@ -12,17 +12,17 @@ import {
   SheetTrigger,
 } from "@/app/_components/ui/sheet";
 import { toast } from "sonner";
-
-import { Barbershop, Service } from "@prisma/client";
+import { Barbershop, Service, Booking } from "@prisma/client";
 import { ptBR } from "date-fns/locale";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { addDays, format, setHours, setMinutes } from "date-fns";
 import { generateDayTimeList } from "../_helpers/hours";
 import { saveBooking } from "../_actions/save-booking";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { getDayBookings } from "../_actions/get-day-booking";
 
 interface ServiceItemProps {
   service: Service;
@@ -35,12 +35,32 @@ const ServiceItem = ({
   isAuthenticated,
   barbeshop,
 }: ServiceItemProps) => {
+
   const { data } = useSession();
-  const router = useRouter()
+  const router = useRouter();
+
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [hour, setHour] = useState<string | undefined>();
   const [loading, setIsLoading] = useState(false);
   const [sheetopen, setSheetOpen] = useState(false);
+  const [dayBookings, setDayBookings] = useState<Booking[]>([])
+
+  
+  useEffect(() => {
+    if (!date) {
+      return;
+    }
+    
+    const refreshHours = async() => {
+      const _dayBooking = await getDayBookings(date)
+      setDayBookings(_dayBooking)
+    }
+    
+    refreshHours()
+    
+  },[date])
+  
+  console.log({dayBookings})
 
   //para quando eu desmarcar uma data o horario sumir
   const handleDateClick = (date: Date | undefined) => {
@@ -80,15 +100,15 @@ const ServiceItem = ({
         date: newDate,
         userId: (data.user as any).id,
       });
-      setDate(undefined)
-      setHour(undefined)
+      setDate(undefined);
+      setHour(undefined);
       toast("Reserva realizada com sucesso!", {
         description: format(newDate, " 'Para' dd 'de' MMM 'às' HH':'mm "),
         action: {
           label: "Visualizar",
           onClick: () => router.push("/booking"),
         },
-      })
+      });
       setSheetOpen(false);
     } catch (error) {
       console.error(error);
@@ -99,8 +119,29 @@ const ServiceItem = ({
 
   //pegando os horarios e o usememo serve para pegar os horarios apenas quando o date mudar
   const timeList = useMemo(() => {
-    return date ? generateDayTimeList(date) : [];
-  }, [date]);
+    if (!date) {
+      return [];
+    }
+
+    return generateDayTimeList(date).filter(time => {
+      const timeHour = Number(time.split(":")[0]);
+      const timeMinutes = Number(time.split(":")[1]);
+
+      const booking = dayBookings.find(booking => {
+        const bookingHour = booking.date.getHours()
+        const bookingMinutes = booking.date.getMinutes()
+
+        return bookingHour === timeHour && bookingMinutes === timeMinutes
+      })
+
+      if (!booking) {
+        return true
+      }
+      return false
+    })
+
+  }, [date, dayBookings]);
+
 
   return (
     <Card>
