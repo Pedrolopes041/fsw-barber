@@ -52,13 +52,13 @@ const ServiceItem = ({
     }
     
     const refreshHours = async() => {
-      const _dayBooking = await getDayBookings(date)
+      const _dayBooking = await getDayBookings(date, barbeshop.id)
       setDayBookings(_dayBooking)
     }
     
     refreshHours()
     
-  },[date])
+  },[date, barbeshop.id])
   
   console.log({dayBookings})
 
