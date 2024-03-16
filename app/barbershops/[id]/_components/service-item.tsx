@@ -106,7 +106,7 @@ const ServiceItem = ({
         description: format(newDate, " 'Para' dd 'de' MMM 'às' HH':'mm "),
         action: {
           label: "Visualizar",
-          onClick: () => router.push("/booking"),
+          onClick: () => router.push("/bookings"),
         },
       });
       setSheetOpen(false);
