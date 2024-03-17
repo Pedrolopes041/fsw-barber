@@ -2,17 +2,21 @@ import { format } from "date-fns";
 import Header from "../_components/header";
 import { ptBR } from "date-fns/locale";
 import Search from "./_components/search";
-import Booking from "../_components/booking-item";
 import Barbershopitem from "./_components/barbeshop-item";
 import { db } from "../_lib/prisma";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../api/auth/[...nextauth]/route";
 
 export default async function Home() {
   const barbershop = await db.barbershop.findMany({});
+  const session = await getServerSession(authOptions);
   return (
     <div>
       <Header />
       <div className="px-5 pt-5">
-        <h1 className="font-bold text-xl">Olá, Miguel</h1>
+        <h1 className="font-bold text-xl">
+        {session?.user ? `Olá, ${session.user.name?.split(" ")[0]}!` : "Olá! Vamos agendar um corte hoje?"}
+        </h1>
         <p className="capitalize text-sm">
           {format(new Date(), "EEEE ',' dd 'de' MMMM", {
             locale: ptBR,
@@ -23,14 +27,6 @@ export default async function Home() {
       <div className="px-5 mt-6">
         <Search />
       </div>
-      {/* 
-      <div className="px-5 mt-6">
-        <h2 className="text-sm uppercase font-bold text-gray-400 mb-3">
-          Agendamentos
-        </h2>
-        <Booking />
-      </div>
-      */}
       <div className="px-5 mt-6">
         <h2 className="text-sm uppercase font-bold text-gray-400 mb-3">
           Recomendados
