@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { Prisma } from "@prisma/client";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -21,6 +21,17 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { CancelBooking } from "../_actions/booking_delete";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "./ui/alert-dialog";
 
 interface BookingItemProps {
   booking: Prisma.BookingGetPayload<{
@@ -32,22 +43,21 @@ interface BookingItemProps {
 }
 
 const Booking = ({ booking }: BookingItemProps) => {
-
   const bookingConfirmation = isFuture(booking.date);
-  const [deleteLoading, setDeleteLoading] = useState(false)
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const HandleCancelClick = async () => {
-    setDeleteLoading(true)
+    setDeleteLoading(true);
     try {
-      await CancelBooking(booking.id)
-      toast.success("Reserva cancelada com sucesso!")
+      await CancelBooking(booking.id);
+      toast.success("Reserva cancelada com sucesso!");
     } catch (error) {
-      console.error(error)
-      toast.error("Algo deu errado!")
-    }finally{
-      setDeleteLoading(false)
+      console.error(error);
+      toast.error("Algo deu errado!");
+    } finally {
+      setDeleteLoading(false);
     }
-  }
+  };
 
   return (
     <Sheet>
@@ -160,17 +170,41 @@ const Booking = ({ booking }: BookingItemProps) => {
                 Voltar
               </Button>
             </SheetClose>
-            <Button
-              disabled={!bookingConfirmation || deleteLoading}
-              variant="destructive"
-              className="w-full"
-              onClick={HandleCancelClick}
-            >
-              {deleteLoading && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              Cancelar Reserva
-            </Button>
+
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  disabled={!bookingConfirmation || deleteLoading}
+                  variant="destructive"
+                  className="w-full"
+                >
+                  Cancelar Reserva
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent className="w-[90%]">
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Cancelar reserva?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Uma vex cancelada, não sera possível reverter está ação.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter className="flex flex-row gap-3">
+                  <AlertDialogCancel className="w-full mt-0">
+                    Voltar
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    className="w-full"
+                    onClick={HandleCancelClick}
+                    disabled={deleteLoading}
+                  >
+                    {deleteLoading && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    Confirmar
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </SheetFooter>
         </div>
       </SheetContent>
