@@ -5,7 +5,7 @@ import Search from "./_components/search";
 import Barbershopitem from "./_components/barbeshop-item";
 import { db } from "../_lib/prisma";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/_lib/auth";
 
 export default async function Home() {
   const barbershop = await db.barbershop.findMany({});
