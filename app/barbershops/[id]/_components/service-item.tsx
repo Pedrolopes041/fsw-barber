@@ -35,7 +35,6 @@ const ServiceItem = ({
   isAuthenticated,
   barbeshop,
 }: ServiceItemProps) => {
-
   const { data } = useSession();
   const router = useRouter();
 
@@ -43,24 +42,22 @@ const ServiceItem = ({
   const [hour, setHour] = useState<string | undefined>();
   const [loading, setIsLoading] = useState(false);
   const [sheetopen, setSheetOpen] = useState(false);
-  const [dayBookings, setDayBookings] = useState<Booking[]>([])
+  const [dayBookings, setDayBookings] = useState<Booking[]>([]);
 
-  
   useEffect(() => {
     if (!date) {
       return;
     }
-    
-    const refreshHours = async() => {
-      const _dayBooking = await getDayBookings(date, barbeshop.id)
-      setDayBookings(_dayBooking)
-    }
-    
-    refreshHours()
-    
-  },[date, barbeshop.id])
-  
-  console.log({dayBookings})
+
+    const refreshHours = async () => {
+      const _dayBooking = await getDayBookings(date, barbeshop.id);
+      setDayBookings(_dayBooking);
+    };
+
+    refreshHours();
+  }, [date, barbeshop.id]);
+
+  console.log({ dayBookings });
 
   //para quando eu desmarcar uma data o horario sumir
   const handleDateClick = (date: Date | undefined) => {
@@ -123,25 +120,23 @@ const ServiceItem = ({
       return [];
     }
 
-    return generateDayTimeList(date).filter(time => {
+    return generateDayTimeList(date).filter((time) => {
       const timeHour = Number(time.split(":")[0]);
       const timeMinutes = Number(time.split(":")[1]);
 
-      const booking = dayBookings.find(booking => {
-        const bookingHour = booking.date.getHours()
-        const bookingMinutes = booking.date.getMinutes()
+      const booking = dayBookings.find((booking) => {
+        const bookingHour = booking.date.getHours();
+        const bookingMinutes = booking.date.getMinutes();
 
-        return bookingHour === timeHour && bookingMinutes === timeMinutes
-      })
+        return bookingHour === timeHour && bookingMinutes === timeMinutes;
+      });
 
       if (!booking) {
-        return true
+        return true;
       }
-      return false
-    })
-
+      return false;
+    });
   }, [date, dayBookings]);
-
 
   return (
     <Card>
@@ -176,10 +171,10 @@ const ServiceItem = ({
                 </SheetTrigger>
 
                 <SheetContent className="p-0">
-                  <SheetHeader className="text-left px-5 py-6 border-b border-solid border-secondary">
+                  <SheetHeader className="text-left px-2 py-4 border-b border-solid border-secondary">
                     <SheetTitle>Fazer Reserva</SheetTitle>
                   </SheetHeader>
-                  <div className="py-6">
+                  <div>
                     <Calendar
                       mode="single"
                       selected={date}
@@ -214,7 +209,7 @@ const ServiceItem = ({
 
                   {/* Mostrar lista de horários apenas se alguma data estiver selecionada */}
                   {date && (
-                    <div className="flex gap-3 overflow-x-auto py-6 px-5 border-t border-solid border-secondary [&::-webkit-scrollbar]:hidden">
+                    <div className="flex gap-3 overflow-x-auto p-2 border-t border-solid border-secondary [&::-webkit-scrollbar]:hidden">
                       {timeList.map((time) => (
                         <Button
                           onClick={() => handleHourClick(time)}
@@ -228,7 +223,7 @@ const ServiceItem = ({
                     </div>
                   )}
 
-                  <div className="py-6 px-5 border-t border-solid border-secondary">
+                  <div className="p-2 border-t border-solid border-secondary">
                     <Card>
                       <CardContent className="p-3 flex flex-col gap-3">
                         <div className="flex justify-between">
@@ -266,10 +261,11 @@ const ServiceItem = ({
                       </CardContent>
                     </Card>
                   </div>
-                  <SheetFooter className="px-5">
+                  <SheetFooter className="p-2">
                     <Button
                       onClick={handleBookingSubmit}
                       disabled={!hour || !date || loading}
+                      className="w-full"
                     >
                       {loading && (
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />

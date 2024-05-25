@@ -8,8 +8,10 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/_lib/auth";
 
 export default async function Home() {
-  const barbershop = await db.barbershop.findMany({});
   const session = await getServerSession(authOptions);
+
+  const barbershop = await db.barbershop.findMany({});
+
   return (
     <div>
       <Header />

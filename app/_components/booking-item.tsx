@@ -117,9 +117,7 @@ const Booking = ({ booking }: BookingItemProps) => {
                   </Avatar>
                   <div>
                     <h2 className="font-bold">{booking.service.name}</h2>
-                    <h3 className="text-xs overflow-hidden text-nowrap text-ellipsis">
-                      {booking.barbershop.address}
-                    </h3>
+                    <h3 className="text-xs ">{booking.barbershop.address}</h3>
                   </div>
                 </CardContent>
               </Card>
